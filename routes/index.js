@@ -1,11 +1,11 @@
-// var express = require('express');
 import express from 'express';
 const router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+import userRouter from './users.js' 
+import routerCities from './cities.js'
 
-// module.exports = router;
+// Routers
+router.use('/auth', userRouter);
+router.use('/cities', routerCities);
+
 export default router
