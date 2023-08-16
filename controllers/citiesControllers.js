@@ -33,6 +33,7 @@ const citiesControllers = {
                 success: false,
                 error: err,
             });
+            next(err);
         }
     },
     getCityById: async (req, res, next) => {
@@ -50,8 +51,8 @@ const citiesControllers = {
             res.json({
                 success: false,
                 error: err,
-                response: resCity
             });
+            next(err);
         }
     },
     updateCityById: async (req, res, next) => {
@@ -69,8 +70,8 @@ const citiesControllers = {
             res.json({
                 success: false,
                 error: err,
-                response: updateCity
             });
+            next(err);
         }
     },
     deleteCityById: async (req, res, next) => {
@@ -88,8 +89,8 @@ const citiesControllers = {
             res.json({
                 success: false,
                 error: err,
-                response: deleteCity
             });
+            next(err);
         }
     }
 };
