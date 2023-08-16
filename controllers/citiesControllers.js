@@ -15,15 +15,15 @@ const citiesControllers = {
             res.json({
                 success: false,
                 error: err,
-                response: newCity
             });
+            next(err);
         }
     },
     getAllCities: async (req, res, next) => {
         let resCities;
         try {
             resCities = await City.find();
-
+            
             res.json({
                 success: true,
                 response: resCities
@@ -32,7 +32,6 @@ const citiesControllers = {
             res.json({
                 success: false,
                 error: err,
-                response: resCities
             });
         }
     },
