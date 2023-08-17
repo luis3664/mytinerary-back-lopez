@@ -42,7 +42,6 @@ const citiesControllers = {
 
         try {
             resCity = await City.findById(id);
-            console.log(resCity);
             res.json({
                 success: true,
                 response: resCity

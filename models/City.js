@@ -4,8 +4,8 @@ let collection = 'cities';
 let schema = new Schema({
     name: { type: String, required: true },
     country: { type: String, required: true },
-    lang: {type: String},
-    currency: {type: String},
+    lang: { type: String, required: true },
+    currency: { type: String, required: true },
     img:{ type: String, required: true }
 },{
     timestamps: true
