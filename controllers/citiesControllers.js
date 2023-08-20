@@ -21,11 +21,25 @@ const citiesControllers = {
     },
     getAllCities: async (req, res, next) => {
         let resCities;
+        let countDoc = 0;
+        let queries = {};
+        let pagination = {page: 1, items: 15};
+
+        if (req.query.name) {queries.name = { $regex: new RegExp('^' + req.query.name.trim(), 'i') }};
+        if (req.query.items) {pagination.items = req.query.items};
+        if (req.query.page) {pagination.page = req.query.page};
+
         try {
-            resCities = await City.find();
+            resCities = await City.find(queries)
+            .limit(pagination.items > 0 ? pagination.items : 0)
+            .skip(pagination.page > 0 ? (pagination.page-1)*pagination.items : 0);
+
+            countDoc = await City.countDocuments()
+            countDoc = Math.ceil(countDoc / pagination.items);
             
             res.json({
                 success: true,
+                count: countDoc,
                 response: resCities
             });
         } catch (err) {
