@@ -1,44 +1,29 @@
 import 'dotenv/config.js';
-// var createError = require('http-errors');
-import createError from 'http-errors';
-// var express = require('express');
 import express from 'express';
-// var path = require('path');
-import path from 'path';
-// var cookieParser = require('cookie-parser');
-import cookieParser from 'cookie-parser';
-// var logger = require('morgan');
-import logger from 'morgan';
+import createError from 'http-errors';
+import cors from 'cors';
+import './database.js'
 
-// var indexRouter = require('./routes/index');
 import indexRouter from './routes/index.js';
-// var usersRouter = require('./routes/users');
-import usersRouter from './routes/users.js';
-
-import { __dirname } from './utils.js';
 
 const app = express();
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
-app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/api', indexRouter);
+app.use('/', (req, res, next) => {
+  res.send('Welcome the API to Mytinerary.')
+});
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+app.use((req, res, next) => {
+  next(createError(404, 'Error route not found'));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -48,5 +33,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-// module.exports = app;
-export default app;
+app.listen(process.env['PORT'], () => console.log('Server ready on port: ' + process.env['PORT']));
