@@ -1,4 +1,4 @@
-import Activity from "../models/Activity";
+import Activity from "../models/Activity.js"
 
 export async function createActivity(req, res, next) {
     let newActivity;
