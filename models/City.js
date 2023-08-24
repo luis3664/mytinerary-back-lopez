@@ -1,4 +1,4 @@
-import {Schema, model} from "mongoose";
+import {Schema, model, Types} from "mongoose";
 
 let collection = 'cities';
 let schema = new Schema({
@@ -6,7 +6,8 @@ let schema = new Schema({
     country: { type: String, required: true },
     lang: { type: String, required: true },
     currency: { type: String, required: true },
-    img:{ type: String, required: true }
+    img: { type: String, required: true },
+    iterinaries: [{ type: Types.ObjectId, ref: 'Itinerary' }]
 },{
     timestamps: true
 });
