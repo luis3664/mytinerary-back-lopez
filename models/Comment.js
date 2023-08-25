@@ -1,6 +1,6 @@
 import { Schema, model, Types } from "mongoose";
 
-let collection = 'comments';
+let collection = 'Comment';
 let schema = new Schema({
     userName: { type: String, required: true },
     userPhoto: { type: String, required: true },

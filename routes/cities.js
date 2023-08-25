@@ -9,6 +9,7 @@ routerCities.get('/:id', citiesControllers.getCityById);
 routerCities.put('/:id', citiesControllers.updateCityById);
 routerCities.delete('/:id', citiesControllers.deleteCityById);
 
+routerCities.post('/all', citiesControllers.createAllCities);
 
 
 export default routerCities;

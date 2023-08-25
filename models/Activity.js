@@ -1,6 +1,6 @@
 import {Schema, model, Types} from "mongoose";
 
-let collection = 'activities';
+let collection = 'Activity';
 let schema = new Schema({
     name: { type: String, required: true, unique: true },
     img: { type: String, required: true, unique: true },

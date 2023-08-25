@@ -1,4 +1,4 @@
-import { createCity, getAllCities, getCityById, updateCityById, deleteCityById } from '../services/citiesServices.js'
+import { createCity, getAllCities, getCityById, updateCityById, deleteCityById, createAllCities } from '../services/citiesServices.js'
 
 const citiesControllers = {
     createCity,
@@ -9,7 +9,9 @@ const citiesControllers = {
 
     updateCityById,
 
-    deleteCityById
+    deleteCityById,
+
+    createAllCities
 };
 
 export default citiesControllers;

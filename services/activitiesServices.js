@@ -11,10 +11,6 @@ export async function createActivity(req, res, next) {
             response: newActivity
         });
     } catch (err) {
-        res.json({
-            success: false,
-            error: err,
-        });
         next(err);
     };
 };
@@ -34,10 +30,6 @@ export async function getAllActivitiesByItinerary(req, res, next) {
             response: resActivities
         });
     } catch (err) {
-        res.json({
-            success: false,
-            error: err,
-        });
         next(err);
     };
 };
@@ -54,50 +46,38 @@ export async function getActivityById(req, res, next) {
             response: resActivity
         });
     } catch (err) {
-        res.json({
-            success: false,
-            error: err,
-        });
         next(err);
     };
 };
 
 export async function updateActivityById(req, res, next) {
     let updateActivity;
-    const {id} = req.params;
+    const { id } = req.params;
 
     try {
-        updateActivity = await Activity.findByIdAndUpdate({_id: id}, req.body, {new: true});
-        
+        updateActivity = await Activity.findByIdAndUpdate({ _id: id }, req.body, { new: true });
+
         res.json({
             success: true,
             response: updateActivity
         });
     } catch (err) {
-        res.json({
-            success: false,
-            error: err,
-        });
         next(err);
     };
 };
 
 export async function deleteActivityById(req, res, next) {
     let deleteActivity;
-    const {id} = req.params;
+    const { id } = req.params;
 
     try {
-        deleteActivity = await Activity.findByIdAndDelete({_id: id});
-        
+        deleteActivity = await Activity.findByIdAndDelete({ _id: id });
+
         res.json({
             success: true,
             response: deleteActivity
         });
     } catch (err) {
-        res.json({
-            success: false,
-            error: err,
-        });
         next(err);
     };
 }

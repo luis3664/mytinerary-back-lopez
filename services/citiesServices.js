@@ -1,5 +1,8 @@
 import City from "../models/City.js";
+// import Itinerary from "../models/Itinerary.js";
 
+
+//CRUD
 export async function createCity(req, res, next) {
     let newCity;
     
@@ -11,10 +14,6 @@ export async function createCity(req, res, next) {
             response: newCity
         });
     } catch (err) {
-        res.json({
-            success: false,
-            error: err,
-        });
         next(err);
     };
 };
@@ -32,7 +31,10 @@ export async function getAllCities(req, res, next) {
     try {
         resCities = await City.find(queries)
         .limit(pagination.items > 0 ? pagination.items : 0)
-        .skip(pagination.page > 0 ? (pagination.page-1)*pagination.items : 0);
+        .skip(pagination.page > 0 ? (pagination.page-1)*pagination.items : 0)
+        .populate({
+            path: 'itineraries'
+        });
 
         countDoc = await City.countDocuments()
         countDoc = Math.ceil(countDoc / pagination.items);
@@ -43,10 +45,6 @@ export async function getAllCities(req, res, next) {
             response: resCities
         });
     } catch (err) {
-        res.json({
-            success: false,
-            error: err,
-        });
         next(err);
     };
 };
@@ -56,16 +54,12 @@ export async function getCityById(req, res, next) {
     const {id} = req.params;
 
     try {
-        resCity = await City.findById(id);
+        resCity = await City.findById(id).populate('itineraries');
         res.json({
             success: true,
             response: resCity
         });
     } catch (err) {
-        res.json({
-            success: false,
-            error: err,
-        });
         next(err);
     };
 };
@@ -82,10 +76,6 @@ export async function updateCityById(req, res, next) {
             response: updateCity
         });
     } catch (err) {
-        res.json({
-            success: false,
-            error: err,
-        });
         next(err);
     };
 };
@@ -95,17 +85,42 @@ export async function deleteCityById(req, res, next) {
     const {id} = req.params;
 
     try {
-        deleteCity = await City.findByIdAndDelete({_id: id});
+        // deleteCity = await City.findById(id);
+
+        // if (deleteCity.itineraries) {
+        //     if (deleteCity.itineraries.activities) {
+                
+        //     };
+        //     if (deleteCity.itineraries.comments) {
+                
+        //     };
+            
+        //     await Itinerary.deleteMany(deleteCity.itineraries)
+        // };
+
+        deleteCity = await City.findByIdAndDelete(id);
         
         res.json({
             success: true,
             response: deleteCity
         });
     } catch (err) {
-        res.json({
-            success: false,
-            error: err,
-        });
         next(err);
     };
+};
+
+// Extra
+export async function createAllCities(req, res, next) {
+    let arrayCities;
+
+    try {
+        arrayCities = await City.insertMany(req.body);
+
+        res.json({
+            success: true,
+            response: arrayCities
+        });
+    } catch (err) {
+        next(err);
+    }
 };

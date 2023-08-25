@@ -1,8 +1,12 @@
 import express from 'express';
-const routerCities = express.Router();
+const routerComments = express.Router();
 
-// import commentsControllers from '../controllers/commentsControllers.js';
+import commentsControllers from '../controllers/commentsControllers.js';
 
-// routerCities.post('/', commentsControllers.createComment);
+routerComments.post('/', commentsControllers.createComment);
+routerComments.get('/', commentsControllers.getAllCommentsByItinerary);
+routerComments.get('/:id', commentsControllers.getCommentById);
+routerComments.put('/:id', commentsControllers.updateCommentById);
+routerComments.delete('/:id', commentsControllers.deleteCommentById);
 
 export default routerComments;
