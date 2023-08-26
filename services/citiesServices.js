@@ -1,5 +1,7 @@
 import City from "../models/City.js";
-import { deleteItineraryById } from "./itinerariesServices.js";
+import Itinerary from "../models/Itinerary.js";
+import Comment from "../models/Comment.js";
+import Activity from "../models/Activity.js";
 
 
 //CRUD
@@ -91,9 +93,21 @@ export async function deleteCityById(req, res, next) {
         });
 
         if (deleteCity.itineraries.length > 0) {
-            deleteCity.itineraries.forEach((element) => {
-                deleteItineraryById(req.params.id = element._id);
+            deleteCity.itineraries.forEach(async (element) => {
+                const aux = await Itinerary.findByIdAndDelete(element._id);
+
+                if (aux.comments.length > 0) {
+                    aux.comments.forEach(async (element) => {
+                        await Comment.findByIdAndDelete(element._id);
+                    });
+                };
+                if (aux.activities.length > 0) {
+                    aux.activities.forEach(async (element) => {
+                        await Activity.findByIdAndDelete(element._id);
+                    });
+                };
             });
+
         }
         
         res.json({

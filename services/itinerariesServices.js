@@ -1,7 +1,7 @@
 import Itinerary from '../models/Itinerary.js';
 import City from '../models/City.js';
-import { deleteCommentById } from './commentsServices.js';
-import { deleteActivityById } from './activitiesServices.js'
+import Comment from '../models/Comment.js';
+import Activity from '../models/Activity.js';
 
 export async function createItinerary(req, res, next) {
     let newItinerary;
@@ -36,10 +36,16 @@ export async function getAllItineraries(req, res, next) {
     if (req.query.city) { city = req.query.city };
 
     try {
-        resItineraries = await Itinerary.find(queries).populate({
-            path: 'city',
-            select: 'name'
-        });
+        resItineraries = await Itinerary.find(queries).populate([
+            {
+                path: 'city',
+                select: 'name'
+            }, {
+                path: 'comments'
+            }, {
+                path: 'activities'
+            }
+        ]);
 
         if (city) {
             resItineraries = resItineraries.filter(itinerary => itinerary.city.name.trim().toLowerCase().startsWith(city.trim().toLowerCase()));
@@ -66,7 +72,7 @@ export async function getItineraryById(req, res, next) {
     const { id } = req.params;
 
     try {
-        resItinerary = Itinerary.findById(id).populate({
+        resItinerary = await Itinerary.findById(id).populate({
             path: 'city',
             select: 'name'
         });
@@ -105,23 +111,23 @@ export async function deleteItineraryById(req, res, next) {
             {
                 path: 'comments',
                 select: 'userName'
-            },{
+            }, {
                 path: 'activities',
                 select: 'name'
             }
         ]);
 
         if (deleteItinerary.comments.length > 0) {
-            deleteItinerary.comments.forEach((element) => {
-                deleteCommentById(req.params.id = element._id)
+            deleteItinerary.comments.forEach(async (element) => {
+                await Comment.findByIdAndDelete(element._id);
             });
         };
 
         if (deleteItinerary.activities.length > 0) {
-            deleteItinerary.activities.forEach((element) => {
-                deleteActivityById(req.params.id = element._id)
+            deleteItinerary.activities.forEach(async (element) => {
+                await Activity.findByIdAndDelete(element._id);
             });
-        }
+        };
 
         await City.findByIdAndUpdate({ _id: deleteItinerary.city }, { $pull: { itineraries: deleteItinerary._id } });
 

@@ -1,9 +1,9 @@
-import { createActivity, getAllActivitiesByItinerary, getActivityById, updateActivityById, deleteActivityById } from '../services/activitiesServices.js'
+import { createActivity, getAllActivities, getActivityById, updateActivityById, deleteActivityById } from '../services/activitiesServices.js'
 
 const activitiesControllers = {
     createActivity,
 
-    getAllActivitiesByItinerary,
+    getAllActivities,
 
     getActivityById,
 

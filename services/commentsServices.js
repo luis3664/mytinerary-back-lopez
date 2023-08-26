@@ -3,7 +3,7 @@ import Itinerary from '../models/Itinerary.js';
 
 export async function createComment(req, res, next) {
     let newComment;
-    
+
     try {
         newComment = await Comment.create(req.body);
 
@@ -18,13 +18,13 @@ export async function createComment(req, res, next) {
     };
 };
 
-export async function getAllCommentsByItinerary(req, res, next) {
+export async function getAllComments(req, res, next) {
     let resComments;
     let queries = {};
     let itineraryID;
 
     if (req.query.itinerary) { itineraryID = req.query.itineraryID };
-    if (req.query.userName) { queries.userName = req.query.userName };
+    if (req.query.userName) { queries.userName = { $regex: '^' + req.query.userName, $options: 'i' } };
 
     try {
         resComments = await Comment.find(queries).populate({
@@ -57,7 +57,14 @@ export async function getCommentById(req, res, next) {
     const { id } = req.params;
 
     try {
-        resComment = Comment.findById(id);
+        resComment = await Comment.findById(id).populate({
+            path: 'itinerary',
+            select: 'userName city',
+            populate: {
+                path: 'city',
+                select: 'name'
+            }
+        });
 
         res.json({
             success: true,
@@ -70,11 +77,11 @@ export async function getCommentById(req, res, next) {
 
 export async function updateCommentById(req, res, next) {
     let updateComment;
-    const {id} = req.params;
+    const { id } = req.params;
 
     try {
-        updateComment = await Comment.findByIdAndUpdate({_id: id}, req.body, {new: true});
-        
+        updateComment = await Comment.findByIdAndUpdate({ _id: id }, req.body, { new: true });
+
         res.json({
             success: true,
             response: updateComment
@@ -86,13 +93,13 @@ export async function updateCommentById(req, res, next) {
 
 export async function deleteCommentById(req, res, next) {
     let deleteComment;
-    const {id} = req.params;
+    const { id } = req.params;
 
     try {
-        deleteComment = await Comment.findByIdAndDelete({_id: id});
+        deleteComment = await Comment.findByIdAndDelete({ _id: id });
 
         await Itinerary.findByIdAndUpdate({ _id: deleteComment.itinerary }, { $pull: { comments: deleteComment._id } });
-        
+
         res.json({
             success: true,
             response: deleteComment

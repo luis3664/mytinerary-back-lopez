@@ -1,9 +1,9 @@
-import { createComment, getAllCommentsByItinerary, getCommentById, updateCommentById, deleteCommentById } from '../services/commentsServices.js';
+import { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById } from '../services/commentsServices.js';
 
 const commentsControllers = {
     createComment,
     
-    getAllCommentsByItinerary,
+    getAllComments,
 
     getCommentById,
 

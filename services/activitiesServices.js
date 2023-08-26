@@ -18,16 +18,20 @@ export async function createActivity(req, res, next) {
     };
 };
 
-export async function getAllActivitiesByItinerary(req, res, next) {
+export async function getAllActivities(req, res, next) {
     let resActivities;
     let itineraryID;
 
-    if (req.query.itinerary) { itineraryID = req.query.itineraryID };
+    if (req.query.itineraryID) { itineraryID = req.query.itineraryID };
 
     try {
-        resActivities = await Itinerary.find().populate({
+        resActivities = await Activity.find().populate({
             path: 'itinerary',
-            select: 'userName city'
+            select: 'userName city',
+            populate: {
+                path: 'city',
+                select: 'name'
+            }
         });
 
         if (itineraryID) {
@@ -51,15 +55,22 @@ export async function getAllActivitiesByItinerary(req, res, next) {
 };
 
 export async function getActivityById(req, res, next) {
-    let resActivity;
+    let resActivities;
     const { id } = req.params;
 
     try {
-        resActivity = Activity.findById(id);
+        resActivities = await Activity.findById(id).populate({
+            path: 'itinerary',
+            select: 'userName city',
+            populate: {
+                path: 'city',
+                select: 'name'
+            }
+        });
 
         res.json({
             success: true,
-            response: resActivity
+            response: resActivities
         });
     } catch (err) {
         next(err);
@@ -67,15 +78,15 @@ export async function getActivityById(req, res, next) {
 };
 
 export async function updateActivityById(req, res, next) {
-    let updateActivity;
+    let resActivities;
     const { id } = req.params;
 
     try {
-        updateActivity = await Activity.findByIdAndUpdate({ _id: id }, req.body, { new: true });
+        resActivities = await Activity.findByIdAndUpdate({ _id: id }, req.body, { new: true });
 
         res.json({
             success: true,
-            response: updateActivity
+            response: resActivities
         });
     } catch (err) {
         next(err);
