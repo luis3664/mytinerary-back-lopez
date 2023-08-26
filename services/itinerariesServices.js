@@ -1,23 +1,26 @@
 import Itinerary from '../models/Itinerary.js';
 import City from '../models/City.js';
+import Comment from '../models/Comment.js';
 
 export async function createItinerary(req, res, next) {
     let newItinerary;
-    let city;
 
     try {
-        newItinerary = await Itinerary.create(req.body);
+        if (req.body.city) {
+            newItinerary = await Itinerary.create(req.body);
 
-        city = await City.findById({ _id: newItinerary.city });
+            await City.findByIdAndUpdate({ _id: newItinerary.city }, { $push: { itineraries: newItinerary._id } });
 
-        city.itineraries.push(newItinerary._id);
-
-        await City.updateOne(city);
-
-        res.json({
-            success: true,
-            response: newItinerary
-        });
+            res.json({
+                success: true,
+                response: newItinerary
+            });
+        } else {
+            res.json({
+                success: false,
+                response: 'The ID of the city to which the itinerary belongs is required'
+            });
+        }
     } catch (err) {
         next(err);
     };
@@ -26,30 +29,27 @@ export async function createItinerary(req, res, next) {
 export async function getAllItineraries(req, res, next) {
     let resItineraries;
     let queries = {};
+    let city = '';
 
-    if (req.query.userName) { queries.userName = req.query.userName };
-    if (req.query.city) { queries.name = req.query.city };
+    if (req.query.userName) { queries.userName = { $regex: new RegExp('^' + req.query.userName.trim(), 'i') } };
+    if (req.query.city) { city = req.query.city };
 
     try {
-        resItineraries = await Itinerary.find().populate({
+        resItineraries = await Itinerary.find(queries).populate({
             path: 'city',
             select: 'name'
         });
 
-        res.json({
-            success: true,
-            response: resItineraries
-        });
-    } catch (err) {
-        next(err);
-    };
-};
-
-export async function getAllItinerariesByCity(req, res, next) {
-    let resItineraries;
-    
-    try {
-        resItineraries = await Itinerary.find().populate('city');
+        if (city) {
+            resItineraries = resItineraries.filter(itinerary =>  itinerary.city.name.trim().toLowerCase().startsWith(city.trim().toLowerCase()));
+            if (resItineraries.length == 0) {
+                res.json({
+                    success: false,
+                    response: `Itineraries with the city keyword ${city} could not be found.`
+                })
+                throw error;
+            }
+        };
 
         res.json({
             success: true,
@@ -65,7 +65,10 @@ export async function getItineraryById(req, res, next) {
     const { id } = req.params;
 
     try {
-        resItinerary = Itinerary.findById(id);
+        resItinerary = Itinerary.findById(id).populate({
+            path: 'city',
+            select: 'name'
+        });
 
         res.json({
             success: true,
@@ -99,6 +102,14 @@ export async function deleteItineraryById(req, res, next) {
     try {
         deleteItinerary = await Itinerary.findByIdAndDelete({ _id: id });
 
+        if (deleteItinerary.comments.length > 0) {
+            deleteItinerary.comments.forEach(async (element) => {
+                await Comment.findByIdAndDelete(element._id)
+            });
+        }
+
+        await City.findByIdAndUpdate({ _id: deleteItinerary.city }, { $pull: { itineraries: deleteItinerary._id } });
+
         res.json({
             success: true,
             response: deleteItinerary
@@ -106,4 +117,4 @@ export async function deleteItineraryById(req, res, next) {
     } catch (err) {
         next(err);
     };
-}
+};
