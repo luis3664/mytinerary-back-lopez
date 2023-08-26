@@ -1,10 +1,13 @@
 import Activity from "../models/Activity.js"
+import Itinerary from "../models/Itinerary.js";
 
 export async function createActivity(req, res, next) {
     let newActivity;
 
     try {
         newActivity = await Activity.create(req.body);
+
+        await Itinerary.findByIdAndUpdate({ _id: newActivity.itinerary }, { $push: { activities: newActivity._id } });
 
         res.json({
             success: true,
@@ -17,13 +20,26 @@ export async function createActivity(req, res, next) {
 
 export async function getAllActivitiesByItinerary(req, res, next) {
     let resActivities;
-    const { name } = req.query.name;
+    let itineraryID;
+
+    if (req.query.itinerary) { itineraryID = req.query.itineraryID };
 
     try {
-        resActivities = await Activity.find().populate({
+        resActivities = await Itinerary.find().populate({
             path: 'itinerary',
-            match: name
+            select: 'userName city'
         });
+
+        if (itineraryID) {
+            resActivities = resActivities.filter(activity => activity.itinerary._id == itineraryID);
+            if (resActivities.length == 0) {
+                res.json({
+                    success: false,
+                    response: 'A valid ID is required to filter.'
+                })
+                throw 'A valid ID is required to filter.';
+            }
+        };
 
         res.json({
             success: true,
@@ -72,6 +88,8 @@ export async function deleteActivityById(req, res, next) {
 
     try {
         deleteActivity = await Activity.findByIdAndDelete({ _id: id });
+
+        await Itinerary.findByIdAndUpdate({ _id: deleteActivity.itinerary }, { $pull: { activities: deleteActivity._id } });
 
         res.json({
             success: true,

@@ -1,6 +1,7 @@
 import Itinerary from '../models/Itinerary.js';
 import City from '../models/City.js';
-import Comment from '../models/Comment.js';
+import { deleteCommentById } from './commentsServices.js';
+import { deleteActivityById } from './activitiesServices.js'
 
 export async function createItinerary(req, res, next) {
     let newItinerary;
@@ -41,7 +42,7 @@ export async function getAllItineraries(req, res, next) {
         });
 
         if (city) {
-            resItineraries = resItineraries.filter(itinerary =>  itinerary.city.name.trim().toLowerCase().startsWith(city.trim().toLowerCase()));
+            resItineraries = resItineraries.filter(itinerary => itinerary.city.name.trim().toLowerCase().startsWith(city.trim().toLowerCase()));
             if (resItineraries.length == 0) {
                 res.json({
                     success: false,
@@ -100,11 +101,25 @@ export async function deleteItineraryById(req, res, next) {
     const { id } = req.params;
 
     try {
-        deleteItinerary = await Itinerary.findByIdAndDelete({ _id: id });
+        deleteItinerary = await Itinerary.findByIdAndDelete({ _id: id }).populate([
+            {
+                path: 'comments',
+                select: 'userName'
+            },{
+                path: 'activities',
+                select: 'name'
+            }
+        ]);
 
         if (deleteItinerary.comments.length > 0) {
-            deleteItinerary.comments.forEach(async (element) => {
-                await Comment.findByIdAndDelete(element._id)
+            deleteItinerary.comments.forEach((element) => {
+                deleteCommentById(req.params.id = element._id)
+            });
+        };
+
+        if (deleteItinerary.activities.length > 0) {
+            deleteItinerary.activities.forEach((element) => {
+                deleteActivityById(req.params.id = element._id)
             });
         }
 

@@ -10,7 +10,7 @@ let schema = new Schema({
     hashtags: { type: [String], required: true, validator: (v) => v.length >= 3 },
     comments: [{ type: Types.ObjectId, ref: 'Comment' }],
     activities: [{ type: Types.ObjectId, ref: 'Activity' }],
-    city: { type: Types.ObjectId, ref: 'City', required: true }
+    city: { type: Types.ObjectId, ref: 'City', required: true, immutable: true }
 }, {
     timestamps: true
 });

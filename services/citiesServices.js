@@ -1,5 +1,5 @@
 import City from "../models/City.js";
-// import Itinerary from "../models/Itinerary.js";
+import { deleteItineraryById } from "./itinerariesServices.js";
 
 
 //CRUD
@@ -85,20 +85,16 @@ export async function deleteCityById(req, res, next) {
     const {id} = req.params;
 
     try {
-        // deleteCity = await City.findById(id);
+        deleteCity = await City.findByIdAndDelete(id).populate({
+            path: 'itineraries',
+            select: 'userName'
+        });
 
-        // if (deleteCity.itineraries) {
-        //     if (deleteCity.itineraries.activities) {
-                
-        //     };
-        //     if (deleteCity.itineraries.comments) {
-                
-        //     };
-            
-        //     await Itinerary.deleteMany(deleteCity.itineraries)
-        // };
-
-        deleteCity = await City.findByIdAndDelete(id);
+        if (deleteCity.itineraries.length > 0) {
+            deleteCity.itineraries.forEach((element) => {
+                deleteItineraryById(req.params.id = element._id);
+            });
+        }
         
         res.json({
             success: true,

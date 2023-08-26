@@ -1,10 +1,13 @@
 import Comment from '../models/Comment.js'
+import Itinerary from '../models/Itinerary.js';
 
 export async function createComment(req, res, next) {
     let newComment;
     
     try {
         newComment = await Comment.create(req.body);
+
+        await Itinerary.findByIdAndUpdate({ _id: newComment.itinerary }, { $push: { comments: newComment._id } });
 
         res.json({
             success: true,
@@ -17,13 +20,28 @@ export async function createComment(req, res, next) {
 
 export async function getAllCommentsByItinerary(req, res, next) {
     let resComments;
-    const { name } = req.query.name;
+    let queries = {};
+    let itineraryID;
+
+    if (req.query.itinerary) { itineraryID = req.query.itineraryID };
+    if (req.query.userName) { queries.userName = req.query.userName };
 
     try {
-        resComments = await Comment.find().populate({
+        resComments = await Comment.find(queries).populate({
             path: 'itinerary',
-            match: name
+            select: 'userName city'
         });
+
+        if (itineraryID) {
+            resComments = resComments.filter(comment => comment.itinerary._id == itineraryID);
+            if (resComments.length == 0) {
+                res.json({
+                    success: false,
+                    response: 'A valid ID is required to filter.'
+                })
+                throw 'A valid ID is required to filter.';
+            }
+        }
 
         res.json({
             success: true,
@@ -72,6 +90,8 @@ export async function deleteCommentById(req, res, next) {
 
     try {
         deleteComment = await Comment.findByIdAndDelete({_id: id});
+
+        await Itinerary.findByIdAndUpdate({ _id: deleteComment.itinerary }, { $pull: { comments: deleteComment._id } });
         
         res.json({
             success: true,
