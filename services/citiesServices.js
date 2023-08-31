@@ -33,10 +33,7 @@ export async function getAllCities(req, res, next) {
     try {
         resCities = await City.find(queries)
         .limit(pagination.items > 0 ? pagination.items : 0)
-        .skip(pagination.page > 0 ? (pagination.page-1)*pagination.items : 0)
-        .populate({
-            path: 'itineraries'
-        });
+        .skip(pagination.page > 0 ? (pagination.page-1)*pagination.items : 0);
 
         countDoc = await City.countDocuments()
         countDoc = Math.ceil(countDoc / pagination.items);
@@ -56,7 +53,14 @@ export async function getCityById(req, res, next) {
     const {id} = req.params;
 
     try {
-        resCity = await City.findById(id).populate('itineraries');
+        resCity = await City.findById(id).populate({
+            path: 'itineraries',
+            populate: [{
+                path: 'activities'
+            },{
+                path: 'comments'
+            }]
+        });
         res.json({
             success: true,
             response: resCity
