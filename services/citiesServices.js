@@ -7,7 +7,7 @@ import Activity from "../models/Activity.js";
 //CRUD
 export async function createCity(req, res, next) {
     let newCity;
-    
+
     try {
         newCity = await City.create(req.body);
 
@@ -24,20 +24,20 @@ export async function getAllCities(req, res, next) {
     let resCities;
     let countDoc = 0;
     let queries = {};
-    let pagination = {page: 1, items: 15};
+    let pagination = { page: 1, items: 15 };
 
-    if (req.query.name) {queries.name = { $regex: new RegExp('^' + req.query.name.trim(), 'i') }};
-    if (req.query.items) {pagination.items = req.query.items};
-    if (req.query.page) {pagination.page = req.query.page};
+    if (req.query.name) { queries.name = { $regex: new RegExp('^' + req.query.name.trim(), 'i') } };
+    if (req.query.items) { pagination.items = req.query.items };
+    if (req.query.page) { pagination.page = req.query.page };
 
     try {
         resCities = await City.find(queries)
-        .limit(pagination.items > 0 ? pagination.items : 0)
-        .skip(pagination.page > 0 ? (pagination.page-1)*pagination.items : 0);
+            .limit(pagination.items > 0 ? pagination.items : 0)
+            .skip(pagination.page > 0 ? (pagination.page - 1) * pagination.items : 0);
 
         countDoc = await City.countDocuments()
         countDoc = Math.ceil(countDoc / pagination.items);
-        
+
         res.json({
             success: true,
             count: countDoc,
@@ -50,14 +50,14 @@ export async function getAllCities(req, res, next) {
 
 export async function getCityById(req, res, next) {
     let resCity;
-    const {id} = req.params;
+    const { id } = req.params;
 
     try {
         resCity = await City.findById(id).populate({
             path: 'itineraries',
             populate: [{
                 path: 'activities'
-            },{
+            }, {
                 path: 'comments'
             }]
         });
@@ -72,11 +72,11 @@ export async function getCityById(req, res, next) {
 
 export async function updateCityById(req, res, next) {
     let updateCity;
-    const {id} = req.params;
+    const { id } = req.params;
 
     try {
-        updateCity = await City.findByIdAndUpdate({_id: id}, req.body, {new: true});
-        
+        updateCity = await City.findByIdAndUpdate({ _id: id }, req.body, { new: true });
+
         res.json({
             success: true,
             response: updateCity
@@ -88,7 +88,7 @@ export async function updateCityById(req, res, next) {
 
 export async function deleteCityById(req, res, next) {
     let deleteCity;
-    const {id} = req.params;
+    const { id } = req.params;
 
     try {
         deleteCity = await City.findByIdAndDelete(id).populate({
@@ -113,7 +113,7 @@ export async function deleteCityById(req, res, next) {
             });
 
         }
-        
+
         res.json({
             success: true,
             response: deleteCity
