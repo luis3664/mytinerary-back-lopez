@@ -7,7 +7,7 @@ const options = {
     secretOrKey: process.env.SECRET_KEY
 }
 
-const functionPassport = async (payload, next) => {
+const functionPassport = async (payload, done) => {
     try {
         const user = await User.findById(payload.id);
 
@@ -15,9 +15,9 @@ const functionPassport = async (payload, next) => {
             throw new Error("No user exists with this id")
         };
 
-        next(null, user);
+        done(null, user);
     } catch (err) {
-        next(err, null);
+        done(err, null);
     }
 }
 
