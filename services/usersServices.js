@@ -88,6 +88,8 @@ export async function getUser(req, res, next) {
             path: 'likes'
         });
 
+        user.password = '';
+
         res.json({
             success: true,
             response: user
@@ -98,7 +100,23 @@ export async function getUser(req, res, next) {
 };
 
 export async function updateUser(req, res, next) {
-    // Falta este, tema la clave complicado
+    let updateUser = {... req.body};
+    const { id } = req.params;
+
+    if (updateUser.likes) {
+        delete updateUser.likes;
+    }
+    
+    try {
+        updateUser = await User.findByIdAndUpdate({ _id: id }, updateUser, { new: true });
+        
+        res.json({
+            success: true,
+            response: updateUser
+        });
+    } catch (err) {
+        next(err);
+    };
 };
 
 export async function deleteUser(req, res, next) {

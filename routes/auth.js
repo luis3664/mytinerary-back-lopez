@@ -8,11 +8,11 @@ import passport from '../middlewares/passport.js';
 
 const authRouter = express.Router();
 
-authRouter.post('/', validator(signUpSchema), emailExistsValidator, usersControllers.signUp);
-authRouter.get('/', validator(signInSchema), usersControllers.signIn);
+authRouter.post('/up', validator(signUpSchema), emailExistsValidator, usersControllers.signUp);
+authRouter.post('/in', validator(signInSchema), usersControllers.signIn);
 // authRouter.get('/users', passport.authenticate( 'jwt', {session:false} ), usersControllers.getUsers); Ver si es necesario
 authRouter.get('/token', passport.authenticate( 'jwt', {session:false} ), usersControllers.getUser);
-// authRouter.put('/token', passport.authenticate( 'jwt', {session:false} ), usersControllers.updateUser); falta
+authRouter.put('/token', passport.authenticate( 'jwt', {session:false} ), usersControllers.updateUser);
 authRouter.delete('/token', passport.authenticate( 'jwt', {session:false} ), usersControllers.deleteUser);
 
 export default authRouter
