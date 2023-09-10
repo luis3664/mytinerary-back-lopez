@@ -46,7 +46,7 @@ export const signUpSchema = joi.object({
         "any.required": "The country field is required.",
         "string.base": "Must be a string."
     }),
-    age: joi.number().required().min(18).max(70).messages({
+    age: joi.number().min(18).max(70).messages({
         "any.required": "The age field is required.",
         "number.base": "Must be a number.",
         "number.max": "Must be less than 71.",
