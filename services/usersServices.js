@@ -15,7 +15,8 @@ export async function signUp(req, res, next) {
         let userData = {
             firstName: newUser.firstName,
             lastName: newUser.lastName,
-            photo: newUser.photo
+            photo: newUser.photo,
+            userId: newUser._id
         }
 
         const token = Jwt.sign({ id: newUser._id, name: newUser.firstName + ' ' + newUser.lastName }, process.env.SECRET_KEY, { expiresIn: '2h' })
@@ -50,7 +51,8 @@ export async function signIn(req, res, next) {
         let userData = {
             firstName: userInDB.firstName,
             lastName: userInDB.lastName,
-            photo: userInDB.photo
+            photo: userInDB.photo,
+            userId: userInDB._id
         }
 
         const token = Jwt.sign({ id: userInDB._id, name: userInDB.firstName + ' ' + userInDB.lastName }, process.env.SECRET_KEY, { expiresIn: '2h' })
@@ -84,9 +86,7 @@ export async function getUser(req, res, next) {
     const { _id } = req.user;
 
     try {
-        user = await User.findById(_id).populate({
-            path: 'likes'
-        });
+        user = await User.findById(_id);
 
         user.password = '';
 
@@ -101,7 +101,7 @@ export async function getUser(req, res, next) {
 
 export async function updateUser(req, res, next) {
     let updateUser = {... req.body};
-    const { id } = req.params;
+    const { id } = req.user;
 
     if (updateUser.likes) {
         delete updateUser.likes;

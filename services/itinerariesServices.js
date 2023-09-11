@@ -139,3 +139,31 @@ export async function deleteItineraryById(req, res, next) {
         next(err);
     };
 };
+
+export async function likes(req, res, next) {
+    let likes;
+    let refItinerary;
+    const { id } = req.params;
+    const { _id: userId } = req.user;
+
+    try {
+        refItinerary = await Itinerary.findById(id);
+
+        let ref = refItinerary.likes.includes(userId);
+
+        if (ref) {
+            refItinerary = await Itinerary.findByIdAndUpdate({ _id: id }, { $pull: { likes: userId } });
+        } else {
+            refItinerary = await Itinerary.findByIdAndUpdate({ _id: id }, { $push: { likes: userId } });
+        }
+
+        likes = refItinerary.likes;
+
+        res.json({
+            success: true,
+            response: likes
+        });
+    } catch (err) {
+        next(err);
+    };
+};
