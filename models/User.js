@@ -8,7 +8,6 @@ let schema = new Schema({
     password: { type: String },
     photo: { type: String, default: '/user.png' },
     country: { type: String },
-    likes: [{ type: Types.ObjectId, ref: 'Itinerary' }],
     age: { type: Number },
     phone: { type: Number },
     verified: { type: Boolean, default: false }

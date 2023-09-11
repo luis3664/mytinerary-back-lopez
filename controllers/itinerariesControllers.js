@@ -1,4 +1,4 @@
-import { createItinerary, getAllItineraries, getItineraryById, updateItineraryById, deleteItineraryById } from '../services/itinerariesServices.js'
+import { createItinerary, getAllItineraries, getItineraryById, updateItineraryById, deleteItineraryById, likes } from '../services/itinerariesServices.js'
 
 const itinerariesControllers = {
     createItinerary,
@@ -9,7 +9,9 @@ const itinerariesControllers = {
 
     updateItineraryById,
 
-    deleteItineraryById
+    deleteItineraryById,
+
+    likes
 };
 
 export default itinerariesControllers;
